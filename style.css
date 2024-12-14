@@ -137,6 +137,7 @@ main{
     border: 1px solid rgb(228, 224, 224);
     padding: 10px;
     font-size: 15px;
+    text-align: center;
 
 }
 .grid-buttons{

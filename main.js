@@ -5,21 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 const formEl = document.forms["request-form"]
 
 
+const nameInputEl = formEl.elements[0]
+const phoneInputEl = formEl.elements[1]
+const dateInputEl = formEl.elements[2]
+const cityInputEl = formEl.elements[3]
+const addressInputEl = formEl.elements[4]
 
-validateForm.onSuccess((event) => {
+
+
+validateForm.onSuccess(() => {
 
 
     
-    
-
-    
-
-    const nameInputEl = formEl.elements[0]
-    const phoneInputEl = formEl.elements[1]
-    const dateInputEl = formEl.elements[2]
-    const cityInputEl = formEl.elements[3]
-    const addressInputEl = formEl.elements[4]
-
     const monthArr = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const monthNo = Number(dateInputEl.valueAsDate.getMonth())
     const monthData = `${dateInputEl.valueAsDate.getDate()} ${monthArr[monthNo]} ${dateInputEl.valueAsDate.getFullYear()}`
@@ -44,40 +41,31 @@ validateForm.onSuccess((event) => {
     const existingElements = localStorage.getItem("courierRequests")
     const existingElementsArr = JSON.parse(existingElements)
 
+  
     
    
 
     if(existingElements){
 
-        let existingPhoneNoArr = existingElementsArr.find( e => {
-            return e.phone_number === phoneInputEl.value
-        })
-        if(!existingPhoneNoArr){
-            
-            existingElementsArr.push(formData)
+        existingElementsArr.push(formData)
 
-            localStorage.setItem("courierRequests", JSON.stringify(existingElementsArr))
-        }else{
-            alert("You Have a Pending Request From this Mobile Number!")
-        }
+        localStorage.setItem("courierRequests", JSON.stringify(existingElementsArr))
         
+        resetFormData(); 
 
-        
-        
-
-        
-
-        
+          
     }
     else{
         newElements.push(formData)
 
         localStorage.setItem("courierRequests", JSON.stringify(newElements))
 
+        resetFormData();   
+
+
     }
 
 
-    resetFormData();   
     getAllCourierDatas();
 
 
@@ -94,6 +82,7 @@ validateForm.onSuccess((event) => {
       const displaySectionEl = document.querySelector(".requests-display")
       
       const display = document.querySelector(".user-details")
+
       
      
 
@@ -113,7 +102,7 @@ validateForm.onSuccess((event) => {
             courierRequestArr.map( request => {
             
         
-                const newGridEl =  `<div class="grid">
+                const newGridEl =  `<div class="grid" id=${request.id}>
                                                                 
                                         <h4 class="grid-header">Customer</h4>
                                         <h4 class="grid-header">Pickup Date</h4>
@@ -126,7 +115,6 @@ validateForm.onSuccess((event) => {
                                         <div class="grid-content" id="mobile">${request.phone_number}</div>
                                         <div class="grid-content request-address">${request.address}</div>
                                         <div class="grid-content grid-buttons">
-                                            <button class="edit-btn">Edit<i class="fa-solid fa-pen-to-square" style="color: #fff;"></i></button>
                                             <button class="delete-btn">Delete</button>
                                         </div>
                                                                 
@@ -153,7 +141,7 @@ validateForm.onSuccess((event) => {
                 btn.addEventListener("click", deleteRequest)
                 
             })
-            
+
 
         }else{
             displaySectionEl.hidden = true
@@ -171,10 +159,13 @@ validateForm.onSuccess((event) => {
         }
         
     })  
+
   }
 
   function deleteRequest(event){
-    const mobileNumber = event.target.parentElement.previousElementSibling.previousElementSibling.innerText
+    
+    const requestId = event.target.parentElement.parentElement.id
+    
     
     const localStorageArr = JSON.parse(localStorage.getItem("courierRequests"))
     const updatedLocalStorageArr = []
@@ -183,7 +174,7 @@ validateForm.onSuccess((event) => {
     if(comfirmMsg){
         localStorageArr.forEach( request => {
         
-            if(mobileNumber !== request.phone_number){
+            if(requestId !== request.id){
                 updatedLocalStorageArr.push(request)
             }
             
